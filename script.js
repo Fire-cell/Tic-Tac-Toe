@@ -1,172 +1,133 @@
-class TicTacToe {
-    #players = ["X", "O"];
-    #winner;
-    #gridCallCount = 0; 
-    
-    constructor(fieldSize=3) {
-        this.fieldSize = fieldSize;
-        this.avaliableSteps = this.fieldSize**2;
-        this.field = this.#createGameField()
+'use strict';
+
+class Game {
+    constructor(name) {
+        this.name = name;
     }
-
-    #createGameField() {
-        let field = new Array(this.fieldSize);
-
-            for (let i = 0; i < this.fieldSize; i++) {
-                field[i] = new Array(this.fieldSize);
-            }
-    
-            return field;
-    }
-
-    #equals = function(checkList) {
-        if (checkList.every((el) => el == this.#players[0])) {
-            return true;
-        } else if(checkList.every((el) => el == this.#players[1])) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    #isWinner() {
-        return this.#winner != null;
-    }
-
-    checkWin() {
-        //Diagonal checks
-        let checkList = []
-        for(let i = 0; i < this.fieldSize; i++) { 
-            checkList.push(this.field[i][i])
-        }
-
-        this.#equals(checkList) ? this.#winner = checkList[0] : checkList = [];
-
-        //this.#isWinner(this.#winner) ? return 
-        for(let i = 0; i < this.fieldSize; i++) { 
-            checkList.push(this.field[i][this.fieldSize-1-i])
-        }
-
-        this.#equals(checkList) ? this.#winner = checkList[0] : checkList = [];
-        //Vertical check
-        for(let i = 0; i < this.fieldSize; i++) {
-            for(let j = 0; j < this.fieldSize; j++) {
-                if (checkList.length == this.fieldSize) {
-                    this.#equals(checkList) ? this.#winner = checkList[0] : checkList = [];
-                }
-                checkList.push(this.field[i][j])
-            }
-        }
-
-        //Horizontal check
-        for(let i = 0; i < this.fieldSize; i++) {
-            for(let j = 0; j < this.fieldSize; j++) {
-                if (checkList.length == this.fieldSize) {
-                    this.#equals(checkList) ? this.#winner = checkList[0] : checkList = [];
-                }
-                checkList.push(this.field[j][i])
-            }
-        }
-
-        if (this.#winner == null && this.avaliableSteps == 0) {
-            return console.log("draw");
-          } else if (this.#isWinner()){
-            return console.log(`The winner is ${this.#winner}!`);
-          } else {
-            return;
-          }
-
-    } 
-    
-
-    grid() {
-        for (let i = 0; i < this.fieldSize; i++) {
-            for(let j = 0; j < this.fieldSize; j++){
-                console.log(`value: ${this.field[i][j]}, x: ${i}, y: ${j}`); 
-            }
-        }
-    }
-
-    #isRightUserInputCoord(x, y) {
-        if( 0 <= x < this.fieldSize && 0 <= y < this.fieldSize) {
-            return true;
-        }
-        return false;
-    }
-
-    #isCellEmpty(el) {
-        return el == null;
-    }
-    
-    #isExistPlayer(player) {
-        switch(player) {
-            case this.#players[0]:
-                return true;
-            
-            case this.#players[1]:
-                return true;
-            
-            default:
-                return false;
-        }
-    }
-
-    #isStepAdd(player) {
-        switch(this.#gridCallCount % 2) {
-            case 0:
-                return player == this.#players[0];
-            
-            case 1:
-                return player == this.#players[1];
-        }
-    }
-
-
-
-    step([x, y], player) {
-        if (this.#isWinner()) {
-            return console.log(`The winner is ${this.#winner}. if you want play again, please, restart.`);
-        }
-
-        if (this.avaliableSteps == 0) {
-            return console.log("You haven't avaliable steps. The game is over.");
-        }
-
-        if(!this.#isRightUserInputCoord()) {
-            return console.log("Wrong coordinates!")
-        }
-
-        if (!this.#isCellEmpty(this.field[x][y])) {
-            return console.log("This cell isn't empty.");
-        }
-        
-        if (!this.#isExistPlayer(player)) {
-            return console.log(`Error: player '${player}' doen't exist`);
-        }
-
-        if(!this.#isStepAdd(player)) {
-            let rightPlayerMove;
-            (this.#gridCallCount % 2==0) ? rightPlayerMove =this.#players[0] : rightPlayerMove =this.#players[1];
-
-            return console.log(`Error! It's time for player '${rightPlayerMove}'!`)
-        }
-
-        this.field[x][y] = player;
-        
-        this.checkWin();
-        this.#gridCallCount++;
-        this.avaliableSteps--;
-    }    
 }
 
-let game = new TicTacToe();
+function compareArrays(firstArray, secondArray) {
+    return firstArray.toString() === secondArray.toString();
+}
 
-//game.grid();
-game.step([1,2], "X");
-game.step([2,1], "O");
-game.step([1,0], "X");
-game.step([2,0], "O");
-game.step([1,1], "X");
-game.step([0,0], "V");
+function transposing2DMatrix(array) {
+    return array[0].map((item, index) => array.map(row => row[index]));
+}
 
-game.grid();
+class TicTacToe extends Game {
+    #field;
+    #winComb;
+    #counter;
+    #winner;
+    #players = ['X', 'Y'];
+    #fieldSize;
+    #avaliableSteps;
+
+    constructor (fieldSize=3, winComb=3) {
+        super('TicTacToe');
+        this.#fieldSize = fieldSize;
+        this.#field = this.#createField(fieldSize);
+        this.#winComb = winComb;
+        this.#avaliableSteps = fieldSize**2;
+        this.#counter = 0;
+        this.#winner;
+    }
+
+    #createField(size) {
+        if(size < 3) {
+            return 'field should be bigger than 2';
+        } 
+
+        return Array(size).fill().map(() => Array(size).fill());
+    }
+    
+    get field() {
+        return this.#field;
+    }
+
+    #checkWinner(player) {
+        const winArray = new Array(this.#winComb).fill(player);
+
+        const horizontal = (field) => {
+            for (let i = 0; i < this.#fieldSize; i++) {
+                for (let j = 0; j < this.#fieldSize - this.#winComb + 1; j++) {
+                    if (compareArrays(field[i].slice(0 + j, this.#winComb + j), winArray)) {
+                        return this.#winner = player;
+                    }
+                }
+            }
+        };
+
+        const vertical = (field) => {
+            const transponingField = transposing2DMatrix(field);
+
+            horizontal(transponingField);
+        };
+
+        const leftDiagonalCheck = (field) => {
+            const diagolanArray = new Array(this.#winComb);
+
+            for (let i = 0; i < this.#fieldSize; i++) {
+                for (let j = 0; j < this.#fieldSize - this.#winComb + 1; j++) {
+                    for (let k = j; k < this.#winComb + j; k++) {
+                        diagolanArray[k - j] = field[k][k];
+                    }
+
+                    if (compareArrays(diagolanArray, winArray)) {
+                        return this.#winner = player;
+                    }
+                }
+            }
+        };
+
+        const rightDiagonalCheck = (field) => {
+            const diagolanArray = new Array(this.#winComb);
+
+            for (let i = 0; i < this.#fieldSize; i++) {
+                for (let j = 0; j < this.#fieldSize - this.#winComb + 1; j++) {
+                    for (let k = j; k < this.#winComb + j; k++) {
+                        diagolanArray[k - j] = field[k][this.#winComb - k - 1];
+                    }
+
+                    if (compareArrays(diagolanArray, winArray)) {
+                        return this.#winner = player;
+                    }
+                }
+            }
+        };
+
+        horizontal(this.#field);
+        vertical(this.#field);
+        leftDiagonalCheck(this.#field);
+        rightDiagonalCheck(this.#field);
+
+        return (this.#winner) ? `Winner is '${player}'!` : `Next move ${this.#checkNextPlayer()}`;
+    }
+
+    #checkNextPlayer = () => (this.#counter % 2 === 0) ? 'X' : 'Y';
+
+    #isPlayerExist = (player) => this.#players.some(value => value === player.toUpperCase());
+
+    #isRightUserInputCoord = (x, y) => 0 <= x < this.#fieldSize && 0 <= y < this.#fieldSize;
+
+    step([x, y], player) {
+        if(this.#winner) return `The winner is ${this.#winner}. if you want play again, please, restart.`;
+        
+        if(!this.#avaliableSteps) return `Draw! if you want play again, please, restart.`
+        
+        if(!this.#isPlayerExist(player)) return `Player '${player}' doen't exist.`;
+
+        if(this.#checkNextPlayer() !== player) return `It's time for player '${this.#checkNextPlayer()}'!`; 
+
+        if(this.#field[x][y]) return "This cell isn't empty.";
+
+        if(!this.#isRightUserInputCoord(x, y)) return `In field ${this.#fieldSize}x${this.#fieldSize} coordinates [${x}, ${y}] don't exist.`; 
+       
+        this.#counter++;
+        this.#avaliableSteps--;
+        this.#field[x][y] = player;
+        return this.#checkWinner(player);
+    }
+}
+
+const game = new TicTacToe(5, 4);
