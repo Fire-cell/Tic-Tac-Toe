@@ -1,10 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tic-Tac-Toe</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style\style.css">
+    <title>Tic Tac</title>
 </head>
 <body>
-    <script src="script.js"></script>
+    <h1 class="title">Tic-Tac-Toe!</h1> 
+    <div id="game-block">
+        
+    </div>
+    <span class="result"></span>
+    <hr>
+    <div class="btn-container">
+        <button class="restart">Restart</button>
+        <button data-modal>New game</button>
+        <button class="back-one-step">Back one step</button>
+    </div>
+
+    <div class="modal">
+        <div class="modal__dialog">
+            <div class="modal__content">
+                <form action="#">
+                    <div data-close class="modal__close">&times;</div>
+                    <div class="modal__title">New Game</div>
+                    <input required placeholder="Board Size" name="fieldSize" type="number" min="3" max="10" class="modal__input">
+                    <input required placeholder="Win Combination" name="winComb" type="number" min="3" max="10" class="modal__input">
+                    <button class="btn new-game">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script defer src="./js/bundle.js"></script>
 </body>
 </html>
